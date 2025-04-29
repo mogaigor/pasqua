@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="eng">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon</title>
+</head>
+
+<body>
+    <h1>Questi sono i punti che tu hai: {{ totale_punti }}</h1><br>
+    <h2>Ecco i tuoi pokemon</h2>
+    {% if raccolta %}
+    <ul>
+        {% for elemento in raccolta %}
+        <li>{{ elemento }}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>La tua raccolta è vuota.</p>
+    {% endif %}
+    <form action="{{ url_for('apri_pacchetto_route') }}" method="post">
+        <button type="submit">APRI UNA BUSTINA</button>
+    </form>
+</body>
+
+</html>
