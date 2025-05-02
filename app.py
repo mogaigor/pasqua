@@ -9,28 +9,32 @@ dati_pokemon = df
 totale_punti = 100
 raccolta = []
 
-probabilita_rarita = ['Comune'] * 70 + ['Non Comune'] * 20 + ['Rara'] * 9 + ['Ultra Rara'] * 1
+df_comune = dati_pokemon[dati_pokemon["Rarità"] == "Comune"]
+df_non_comune = dati_pokemon[dati_pokemon["Rarità"] == "Non Comune"]
+df_raro = dati_pokemon[dati_pokemon["Rarità"] == "Rara"]
 
-def apri_pacchetto():
+def pesca():
+    global totale_punti, raccolta
     pacchetto = []
-    punti_guadagnati = 0
-    i = 0
-    while i < 5:
-        rarita = random.choice(probabilita_rarita)
-        carte_disponibili = dati_pokemon[dati_pokemon['Rarità'] == rarita]
-        if len(carte_disponibili) > 0:
-            carta = carte_disponibili.iloc[random.randint(0, len(carte_disponibili) - 1)]
-            pacchetto.append(carta.to_dict())
-            if rarita == 'Comune':
-                punti_guadagnati += 1
-            elif rarita == 'Non Comune':
-                punti_guadagnati += 10
-            elif rarita == 'Rara':
-                punti_guadagnati += 30
-            elif rarita == 'Ultra Rara':
-                punti_guadagnati += 104
-            i += 1
-    return pacchetto, punti_guadagnati
+    if totale_punti >= 10:
+        totale_punti -= 10
+        for _ in range(5):
+            numero = random.randint(1, 100)
+            if numero <= 70:
+                totale_punti += 1
+                pokemon = df_comune.sample().to_dict(orient='records')[0]
+                pacchetto.append(pokemon)
+            elif numero > 70 and numero <= 90:
+                totale_punti += 3
+                pokemon = df_non_comune.sample().to_dict(orient='records')[0]
+                pacchetto.append(pokemon)
+            elif numero > 90:
+                totale_punti += 6
+                pokemon = df_raro.sample().to_dict(orient='records')[0]
+                pacchetto.append(pokemon)
+        raccolta.extend(pacchetto)
+        salva_raccolta_su_file()
+    return pacchetto
 
 def salva_raccolta_su_file():
     raccolta_df = pd.DataFrame(raccolta)
@@ -51,13 +55,9 @@ def home():
 
 @app.route('/apri_pacchetto', methods=['POST'])
 def apri_pacchetto_route():
-    global totale_punti, raccolta
+    global totale_punti
     if totale_punti >= 10:
-        totale_punti -= 10
-        pacchetto, punti_guadagnati = apri_pacchetto()
-        raccolta.extend(pacchetto)
-        salva_raccolta_su_file()
-        totale_punti += punti_guadagnati
+        pesca()
     return redirect(url_for('home'))
 
 @app.route('/mostra_raccolta', methods=['GET'])
