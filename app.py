@@ -62,11 +62,11 @@ def apri_pacchetto_route():
 
 @app.route('/mostra_raccolta', methods=['GET'])
 def mostra_raccolta_route():
-    return render_template('collezione.html', raccolta=raccolta)
+    return render_template('index.html', raccolta=raccolta)
 
 @app.route('/mostra_punti', methods=['GET'])
 def mostra_punti_route():
-    return render_template('punti.html', totale_punti=totale_punti)
+    return render_template('index.html', totale_punti=totale_punti)
 
 if __name__ == '__main__':
     app.run(debug=True)
